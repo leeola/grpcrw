@@ -9,10 +9,6 @@ type Recver interface {
 	RecvBytes() ([]byte, error)
 }
 
-type Sender interface {
-	SendBytes() ([]byte, error)
-}
-
 type RecverFunc func() ([]byte, error)
 
 type Reader struct {
@@ -39,7 +35,7 @@ func (r Reader) Read(p []byte) (int, error) {
 
 		// TODO(leeola): determine how we'll implicitly determine EOF.
 		// 0 bytes seems a decent starting point. Though, we may want to
-		// support 0, since Go readers do.
+		// support 0, since Go readers do iirc.
 		isEOF := len(b) == 0
 
 		if !isEOF {
