@@ -3,6 +3,7 @@ package grpcrw
 import (
 	"bytes"
 	"fmt"
+	"io"
 )
 
 type Recver interface {
@@ -29,8 +30,11 @@ func NewReaderF(f func() ([]byte, error)) Reader {
 func (r Reader) Read(p []byte) (int, error) {
 	if r.Recver != nil {
 		b, err := r.RecvBytes()
+		if err == io.EOF {
+			return 0, err // no wrap EOF
+		}
 		if err != nil {
-			return 0, fmt.Errorf("recvbytes: %v", err)
+			return 0, fmt.Errorf("grpcrw recvbytes: %v", err)
 		}
 
 		// TODO(leeola): determine how we'll implicitly determine EOF.
@@ -42,7 +46,7 @@ func (r Reader) Read(p []byte) (int, error) {
 			// write recv'd bytes to buf, as it may be more than we can read into
 			// p
 			if _, err := r.buf.Write(b); err != nil {
-				return 0, fmt.Errorf("buf write: %v", err)
+				return 0, fmt.Errorf("grpcrw buf write: %v", err)
 			}
 		} else {
 			// "close" this Recver so the Read will finish due to the Recver being EOF

@@ -33,7 +33,7 @@ func (f WriterFunc) SendBytes(p []byte) error {
 func (w Writer) Write(p []byte) (int, error) {
 	// TODO(leeola): automatically chunk p if p > ChunkSize
 	if err := w.SendBytes(p); err != nil {
-		return 0, fmt.Errorf("sendbytes: %v", err)
+		return 0, fmt.Errorf("grpcrw sendbytes: %v", err)
 	}
 
 	return len(p), nil
