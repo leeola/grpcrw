@@ -3,6 +3,7 @@ package grpcrw
 import (
 	"bytes"
 	"fmt"
+	"io"
 )
 
 type Sender interface {
@@ -32,7 +33,11 @@ func (f WriterFunc) SendBytes(p []byte) error {
 
 func (w Writer) Write(p []byte) (int, error) {
 	// TODO(leeola): automatically chunk p if p > ChunkSize
-	if err := w.SendBytes(p); err != nil {
+	err := w.SendBytes(p)
+	if err == io.EOF {
+		return 0, io.EOF
+	}
+	if err != nil {
 		return 0, fmt.Errorf("grpcrw sendbytes: %v", err)
 	}
 
